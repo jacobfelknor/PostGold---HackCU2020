@@ -119,8 +119,8 @@ def generate_title(g):
 if __name__ == "__main__":
 
     reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
-    subreddit = "kanye"
-    numberOfPosts = 100
+    subreddit = "lifeofnorman"
+    numberOfPosts = 300
     titles, freqs = getTitle(reddit, subreddit, numberOfPosts)
     # print(titles)
     g = nx.DiGraph(firsts=[], ends=[])
