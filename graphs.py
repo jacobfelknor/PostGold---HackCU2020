@@ -91,7 +91,7 @@ def build_graph(titles, freqs, g):
                     node.end_freq += 1
 
             if last_node:
-                g.add_edge(node, last_node)
+                g.add_edge(last_node, node)
 
             last_node = node
 
@@ -102,18 +102,16 @@ def generate_title(g):
     gen_title = ""
     num_firsts = len(g.graph["firsts"])
     word = g.graph["firsts"][random.randrange(0, num_firsts)]
-    end = False
+
     while True:
         gen_title += word.word + " "
-        try:
-            len_edges = len(g.edges(word))
-            if len_edges == 0:
-                break
-            word = list(g.edges(word))[random.randrange(0, len_edges)][1]
-        except IndexError:
+        len_edges = len(g.edges(word))
+        if len_edges == 0:
             break
+        word = list(g.edges(word))[random.randrange(0, len_edges)][1]
         if word.end:
-            break
+            if random.randrange(0, 1):
+                break
 
     return gen_title
 
@@ -121,14 +119,16 @@ def generate_title(g):
 if __name__ == "__main__":
 
     reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
-    subreddit = "lifeofnorman"
+    subreddit = "kanye"
     numberOfPosts = 100
     titles, freqs = getTitle(reddit, subreddit, numberOfPosts)
     # print(titles)
     g = nx.DiGraph(firsts=[], ends=[])
 
     build_graph(titles, freqs, g)
-
+    # print(g.graph["ends"])
+    # node = search_graph("in", g)
+    # print(g.edges(node))
     for i in range(15):
         print(generate_title(g))
         print("\n\n")
