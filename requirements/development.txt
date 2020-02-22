@@ -1,5 +1,5 @@
 django==3.0.3
 praw==6.5.1
 black==19.10b0
-flake8=3.7.9
+flake8==3.7.9
 django-crispy-forms==1.8.1
