@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "reddit.apps.RedditConfig",
+    "crispy_forms",
 ]
 
 MIDDLEWARE = [
@@ -86,6 +87,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 
 # Internationalization
