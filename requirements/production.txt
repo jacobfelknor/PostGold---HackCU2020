@@ -1,1 +1,3 @@
 -r development.txt
+
+uswgi==2.0.18
