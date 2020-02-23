@@ -3,4 +3,5 @@ praw==6.5.1
 black==19.10b0
 flake8==3.7.9
 django-crispy-forms==1.8.1
+networkx==2.4
 tweepy==3.8.0

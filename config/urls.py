@@ -19,4 +19,5 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("reddit/", include("reddit.urls")),
+    path("twitter/", include("twitter.urls")),
 ]
