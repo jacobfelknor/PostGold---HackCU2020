@@ -91,7 +91,10 @@ def build_graph(titles, freqs, g):
                     node.end_freq += 1
 
             if last_node:
-                g.add_edge(last_node, node)
+                if(g.has_edge(last_node, node)):
+                    g[last_node][node]['weight'] += 1
+                else:
+                    g.add_edge(last_node, node, weight=1)
 
             last_node = node
 
@@ -108,7 +111,15 @@ def generate_title(g):
         len_edges = len(g.edges(word))
         if len_edges == 0:
             break
-        word = list(g.edges(word))[random.randrange(0, len_edges)][1]
+        l = list(g.edges(word,data=True))
+        rn = []
+        count = 0
+        for x in l:
+            new = [count]*(x[2]['weight'])
+            rn += new
+            count += 1
+        x = random.randrange(0, len(rn))
+        word = list(g.edges(word))[rn[x]][1]
         if word.end:
             if random.randrange(0, 1):
                 break
@@ -126,11 +137,8 @@ if __name__ == "__main__":
     g = nx.DiGraph(firsts=[], ends=[])
 
     build_graph(titles, freqs, g)
-    # print(g.graph["ends"])
-    # node = search_graph("in", g)
-    # print(g.edges(node))
+
     for i in range(15):
         print(generate_title(g))
         print("\n\n")
-    # print(list(g.edges(word))[0][])
 
