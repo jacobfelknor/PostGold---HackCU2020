@@ -56,7 +56,7 @@ def getPostSentenceList(reddit, subreddit, numberOfPosts):
         #all the titles
         title = submission.selftext
         for i in title:
-            if i == '.' or i == '!' or i == '?':
+            if i == '.' or i == '!' or i == '?' or i == '\n':
                 #print(my_string)
                 my_title.append(my_string)
                 #print(my_title)
@@ -65,6 +65,13 @@ def getPostSentenceList(reddit, subreddit, numberOfPosts):
                 my_string = ""
             else:
                 my_string += i
+    
+    titles = [x for x in titles if x[0] != '']
+    # for i in titles:
+    #     if i[0] == '':
+    #         print('\n')
+    #         titles.remove(i)
+
     print(titles)
 
 reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
