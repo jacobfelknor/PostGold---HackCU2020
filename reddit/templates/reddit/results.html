@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="card">
+        <h3 class="card-header">Results</h3>
+        <div class="card-body">
+            {% for result in results %}
+            {{ result }}
+            <hr>
+            {% endfor %}
+            <button class="btn btn-success" onclick="location.reload();">Reload</button>
+        </div>
+    </div>
+</div>
+
+<br>
+<br>
+
+{% endblock %}

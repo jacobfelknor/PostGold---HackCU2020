@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .forms import RedditSearch
 from django.http import HttpResponse
+from .graphs import get_sentences
 
 # Create your views here.
 
@@ -12,10 +13,10 @@ def search(request):
         form = RedditSearch(request.POST)
         # check whether it's valid:
         if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            return HttpResponse(form.cleaned_data["q"])
+            titles = get_sentences(form.cleaned_data["q"])
+            ctx = {}
+            ctx["results"] = titles
+            return render(request, "reddit/results.html", context=ctx)
 
     # if a GET (or any other method) we'll create a blank form
     else:
