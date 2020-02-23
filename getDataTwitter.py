@@ -4,30 +4,30 @@ import re
 from config.keys import twitter_client_id, twitter_client_secret, access_token, access_token_secret
 
 
-def getTitleSentenceList(setOfTweets):
-    titles = []
+def getTweets(setOfTweets):
+    tweets = []
     my_title = []
     for status in setOfTweets:
         tweet = status._json
         newTweet = tweet["text"]
         if "RT @" not in newTweet and "http" not in newTweet:  # and ("https" not in tweet["text"]):
             my_title.append(newTweet)
-            titles.append(my_title)
+            tweets.append(my_title)
             my_title = []
-    return titles
+    return tweets
 
 
-def getTitle(tweet):
+def getTweetData(tweet):
     # continued from code above
-    titleData = {}
+    tweetData = {}
     for title in tweet:
         title = title[0].lower()
-        titles = re.sub("[^\w]", " ", title).split()
+        titles = re.sub(r"[^\w]", " ", title).split()
         for i in titles:
-            if titleData.get(i, -1) == -1:
-                titleData.update({i: 0})
-            titleData[i] += 1
-    print(titleData)
+            if tweetData.get(i, -1) == -1:
+                tweetData.update({i: 0})
+            tweetData[i] += 1
+    print(tweetData)
 
 
 auth = tweepy.OAuthHandler(twitter_client_id, twitter_client_secret)
@@ -37,4 +37,4 @@ api = tweepy.API(auth)
 
 setOfTweets = api.user_timeline(screen_name="elonmusk", count=1000, include_rts=True)
 
-getTitle(getTitleSentenceList(setOfTweets))
+getTweetData(getTweets(setOfTweets))

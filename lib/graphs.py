@@ -1,10 +1,44 @@
 import random
+import re
 import string
 
 import networkx as nx
 import praw
+import tweepy
 
-from config.keys import client_id, client_secret, user_agent
+from config.keys import (
+    access_token,
+    access_token_secret,
+    client_id,
+    client_secret,
+    twitter_client_id,
+    twitter_client_secret,
+    user_agent,
+)
+
+
+def getTweets(setOfTweets):
+    tweets = []
+    for status in setOfTweets:
+        tweet = status._json
+        newTweet = tweet["text"]
+        if "RT @" not in newTweet and "http" not in newTweet:  # and ("https" not in tweet["text"]):
+            tweets.append(newTweet.split())
+
+    return tweets
+
+
+def getTweetData(tweet):
+    # continued from code above
+    tweetData = {}
+    for title in tweet:
+        title = title[0].lower()
+        titles = re.sub(r"[^\w]", " ", title).split()
+        for i in titles:
+            if tweetData.get(i, -1) == -1:
+                tweetData.update({i: 0})
+            tweetData[i] += 1
+    return tweetData
 
 
 def getTitle(reddit, subreddit, numberOfPosts):
@@ -73,7 +107,8 @@ def build_graph(titles, freqs, g):
                 end = True
 
             if not search_graph(word, g):
-                node = Node(word=word, frequency=freqs[word], first=first, end=end)
+                freq = freqs.get(word, None)
+                node = Node(word=word, frequency=freq, first=first, end=end)
                 g.add_node(node)
                 if first:
                     g.graph["firsts"].append(node)
@@ -141,3 +176,24 @@ def get_sentences(subreddit):
         ret.append(generate_title(g).strip())
     return ret
 
+
+def get_gen_tweets(handle):
+    auth = tweepy.OAuthHandler(twitter_client_id, twitter_client_secret)
+    auth.set_access_token(access_token, access_token_secret)
+
+    api = tweepy.API(auth)
+
+    setOfTweets = api.user_timeline(screen_name=handle, count=1000, include_rts=True)
+
+    tweets = getTweets(setOfTweets)
+    # tweet_data = getTweetData(tweets)
+
+    g = nx.DiGraph(firsts=[], ends=[])
+    build_graph(tweets, {}, g)
+
+    ret = []
+    for i in range(15):
+        ret.append(generate_title(g).strip())
+
+    # print(ret)
+    return ret
