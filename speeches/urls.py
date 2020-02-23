@@ -7,5 +7,5 @@ app_name = "speeches"
 urlpatterns = [
     path("choose/", views.pick, name="choose"),
     path("obama/", views.obama, name="obama"),
-    path("trump/", views.trump, name="trump"),
+    # path("trump/", views.trump, name="trump"),
 ]
