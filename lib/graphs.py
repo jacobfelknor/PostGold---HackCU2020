@@ -172,8 +172,12 @@ def get_sentences(subreddit):
     build_graph(titles, freqs, g)
 
     ret = []
-    for i in range(15):
-        ret.append(generate_title(g).strip())
+    seen = {}
+    while len(ret) < 15:
+        title = generate_title(g).strip()
+        if not seen.get(title, None):
+            ret.append(title)
+            seen[title] = True
     return ret
 
 
@@ -183,7 +187,7 @@ def get_gen_tweets(handle):
 
     api = tweepy.API(auth)
 
-    setOfTweets = api.user_timeline(screen_name=handle, count=1000, include_rts=True)
+    setOfTweets = api.user_timeline(screen_name=handle, count=5000, include_rts=True)
 
     tweets = getTweets(setOfTweets)
     # tweet_data = getTweetData(tweets)
@@ -192,8 +196,12 @@ def get_gen_tweets(handle):
     build_graph(tweets, {}, g)
 
     ret = []
-    for i in range(15):
-        ret.append(generate_title(g).strip())
+    seen = {}
+    while len(ret) < 15:
+        gen_tweet = generate_title(g).strip()
+        if not seen.get(gen_tweet, None):
+            ret.append(gen_tweet)
+            seen[gen_tweet] = True
 
     # print(ret)
     return ret
