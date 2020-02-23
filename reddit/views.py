@@ -16,6 +16,7 @@ def search(request):
             titles = get_sentences(form.cleaned_data["q"])
             ctx = {}
             ctx["results"] = titles
+            ctx["subreddit"] = form.cleaned_data["q"]
             return render(request, "reddit/results.html", context=ctx)
 
     # if a GET (or any other method) we'll create a blank form

@@ -16,6 +16,7 @@ def search(request):
             titles = get_gen_tweets(form.cleaned_data["q"])
             ctx = {}
             ctx["results"] = titles
+            ctx["handle"] = form.cleaned_data["q"]
             return render(request, "twitter/results.html", context=ctx)
 
     # if a GET (or any other method) we'll create a blank form

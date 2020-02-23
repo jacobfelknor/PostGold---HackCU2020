@@ -165,7 +165,7 @@ def generate_title(g):
 
 def get_sentences(subreddit):
     reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
-    numberOfPosts = 300
+    numberOfPosts = 500
     titles, freqs = getTitle(reddit, subreddit, numberOfPosts)
     # print(titles)
     g = nx.DiGraph(firsts=[], ends=[])
