@@ -23,6 +23,19 @@ def getTitle(reddit, subreddit, numberOfPosts):
     return titleWords, titleData
 
 
+def getTitleSentenceList(reddit, subreddit, numberOfPosts):
+    titles = []
+    for submission in reddit.subreddit(subreddit).top(limit=numberOfPosts):
+        #all the titles
+        title = submission.title 
+        # title = list(title)
+        title = title.lower()
+        title = title.split(" ")
+        #print(my_title)
+        titles.append(title)
+    return(titles)
+
+
 def getPostText(reddit, subreddit, numberOfPosts):
     textData = {}
     for submission in reddit.subreddit(subreddit).top(limit=numberOfPosts):
@@ -35,11 +48,57 @@ def getPostText(reddit, subreddit, numberOfPosts):
             textData[i] += 1
     return textData
 
+def getPostSentenceList(reddit, subreddit, numberOfPosts):
+    ret = []
+    sentence = []
+    word = ""
+    for submission in reddit.subreddit(subreddit).top(limit=numberOfPosts):
+        #all the titles
+        contents = submission.selftext
+        for i in contents:
+            if i == '.' or i == '!' or i == '?':
+                if word:
+                    sentence.append(word)
+                    word = ""
+                if sentence:
+                    ret.append(sentence)
+                    sentence = []
+            elif i.strip() == '':
+                if word:
+                    sentence.append(word)
+                    word = ""
+            else:
+                if(i != '\n'):
+                    word += i
+    return ret
+
+
+
+
+    #     for i in title:
+    #         if i == '.' or i == '!' or i == '?' or i == '\n':
+    #             #print(my_string)
+    #             my_title.append(my_string)
+    #             titles = my_title[0].split(" ")
+    #             #print(my_title)
+    #             titles.append(my_title)
+    #             my_title = []
+    #             my_string = ""
+    #         else:
+    #             my_string += i
+    #     #titles = title.split(" ")
+    
+    # titles = [x for x in titles if x[0] != '']
+    # for i in titles:
+    #     if i[0] == '':
+    #         print('\n')
+    #         titles.remove(i)
+
 
 class Node:
     def __init__(self, *args, **kwargs):
         self.word = kwargs.pop("word", None)
-        self.frequency = kwargs.pop("frequency", None)
+        #self.frequency = kwargs.pop("frequency", None)
         self.start = kwargs.pop("start", False)
         self.start_freq = kwargs.pop("start_freq", 0)
         self.end = kwargs.pop("end", False)
@@ -59,7 +118,7 @@ def search_graph(word, g):
     return None
 
 
-def build_graph(titles, freqs, g):
+def build_graph(titles, g):
     for title in titles:
         ii = 0
         last_node = None
@@ -73,7 +132,7 @@ def build_graph(titles, freqs, g):
                 end = True
 
             if not search_graph(word, g):
-                node = Node(word=word, frequency=freqs[word], first=first, end=end)
+                node = Node(word=word, first=first, end=end)
                 g.add_node(node)
                 if first:
                     g.graph["firsts"].append(node)
@@ -118,8 +177,9 @@ def generate_title(g):
             new = [count]*(x[2]['weight'])
             rn += new
             count += 1
-        x = random.randrange(0, len(rn))
-        word = list(g.edges(word))[rn[x]][1]
+        x = rn[random.randrange(0, len(rn))]
+        #x = random.randrange(0, len_edges)
+        word = list(g.edges(word))[x][1]
         if word.end:
             if random.randrange(0, 1):
                 break
@@ -130,15 +190,24 @@ def generate_title(g):
 if __name__ == "__main__":
 
     reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
-    subreddit = "lifeofnorman"
-    numberOfPosts = 300
-    titles, freqs = getTitle(reddit, subreddit, numberOfPosts)
-    # print(titles)
-    g = nx.DiGraph(firsts=[], ends=[])
+    subreddit = "amitheasshole"
+    numberOfPosts = 500
+    titles2 = getTitleSentenceList(reddit, subreddit, numberOfPosts)
 
-    build_graph(titles, freqs, g)
+    # bodies = getPostSentenceList(reddit, subreddit, numberOfPosts)
+
+    # gB = nx.DiGraph(firsts=[], ends=[])
+
+    # build_graph(bodies, gB)
+
+    gT = nx.DiGraph(firsts=[], ends=[])
+
+    build_graph(titles2, gT)
 
     for i in range(15):
-        print(generate_title(g))
+        print(generate_title(gT))
         print("\n\n")
+    # for i in range(5):
+    #     print(generate_title(gB))
+    #     print('\n\n **wait** \n\n')
 
