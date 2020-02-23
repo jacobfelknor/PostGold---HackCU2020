@@ -42,10 +42,19 @@ def getPostText(reddit, subreddit, numberOfPosts):
         text = submission.selftext
         text.translate(string.punctuation)
         posts = text.split(" ")
+        addToNext = ""
         for i in posts:
-            if textData.get(i, -1) == -1:
-                textData.update({i: 0})
-            textData[i] += 1
+            if addToNext != "":
+                i += addToNext + " " + i
+                #print(i)
+                addToNext = ''
+            if i in ["a", "that", "can", "to", "in", "it", "was", "for", "on", "are", "as", "with", "at", "be", "this"]:
+                #print(i)
+                addToNext = i
+            else:
+                if textData.get(i, -1) == -1:
+                    textData.update({i: 0})
+                textData[i] += 1
     return textData
 
 def getPostSentenceList(reddit, subreddit, numberOfPosts):
@@ -64,7 +73,9 @@ def getPostSentenceList(reddit, subreddit, numberOfPosts):
                     ret.append(sentence)
                     sentence = []
             elif i.strip() == '':
-                if word:
+                if word in ["a", "that", "can", "to", "in", "it", "was", "for", "on", "are", "as", "with", "at", "be", "this"]:
+                    word = word + " "
+                elif word:
                     sentence.append(word)
                     word = ""
             else:
@@ -190,24 +201,26 @@ def generate_title(g):
 if __name__ == "__main__":
 
     reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
-    subreddit = "amitheasshole"
-    numberOfPosts = 500
+    subreddit = "lifeofnorman"
+    numberOfPosts = 100
     titles2 = getTitleSentenceList(reddit, subreddit, numberOfPosts)
 
-    # bodies = getPostSentenceList(reddit, subreddit, numberOfPosts)
+    bodies = getPostSentenceList(reddit, subreddit, numberOfPosts)
 
-    # gB = nx.DiGraph(firsts=[], ends=[])
+    print(bodies)
 
-    # build_graph(bodies, gB)
+    gB = nx.DiGraph(firsts=[], ends=[])
+
+    build_graph(bodies, gB)
 
     gT = nx.DiGraph(firsts=[], ends=[])
 
     build_graph(titles2, gT)
 
-    for i in range(15):
+    for i in range(1):
         print(generate_title(gT))
         print("\n\n")
-    # for i in range(5):
-    #     print(generate_title(gB))
-    #     print('\n\n **wait** \n\n')
+    for i in range(5):
+        print(generate_title(gB))
+        print('\n\n **wait** \n\n')
 
