@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "reddit.apps.RedditConfig",
     "twitter.apps.TwitterConfig",
+    "speeches.apps.SpeechesConfig",
     "crispy_forms",
 ]
 

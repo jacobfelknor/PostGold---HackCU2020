@@ -4,12 +4,10 @@
 
 <div class="container">
     <div class="card">
-        <h3 class="card-header">Results for r/{{ subreddit }}</h3>
+        <h3 class="card-header">Your {{ name }} Speech</h3>
         <div class="card-body">
-            {% for result in results %}
-            {{ result }}
+            {{ speech }}
             <hr>
-            {% endfor %}
             <button class="btn btn-success" onclick="location.reload();">Reload</button>
         </div>
     </div>

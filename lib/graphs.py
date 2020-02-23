@@ -23,7 +23,7 @@ def getTweets(setOfTweets):
         tweet = status._json
         newTweet = tweet["text"]
         if "RT @" not in newTweet and "http" not in newTweet:  # and ("https" not in tweet["text"]):
-            tweets.append(newTweet.split())
+            tweets.append([x.lower() for x in newTweet.split()])
 
     return tweets
 
@@ -49,6 +49,7 @@ def getTitle(reddit, subreddit, numberOfPosts):
         title = submission.title
         title.translate(string.punctuation)
         titles = title.split(" ")
+        titles = [x.lower().replace('"', "") for x in titles]
         titleWords.append(titles)
         for i in titles:
             if titleData.get(i, -1) == -1:
@@ -164,7 +165,7 @@ def generate_title(g):
 
 def get_sentences(subreddit):
     reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
-    numberOfPosts = 300
+    numberOfPosts = 500
     titles, freqs = getTitle(reddit, subreddit, numberOfPosts)
     # print(titles)
     g = nx.DiGraph(firsts=[], ends=[])
@@ -172,8 +173,12 @@ def get_sentences(subreddit):
     build_graph(titles, freqs, g)
 
     ret = []
-    for i in range(15):
-        ret.append(generate_title(g).strip())
+    seen = {}
+    while len(ret) < 15:
+        title = generate_title(g).strip()
+        if not seen.get(title, None):
+            ret.append(title)
+            seen[title] = True
     return ret
 
 
@@ -183,7 +188,7 @@ def get_gen_tweets(handle):
 
     api = tweepy.API(auth)
 
-    setOfTweets = api.user_timeline(screen_name=handle, count=1000, include_rts=True)
+    setOfTweets = api.user_timeline(screen_name=handle, count=10000, include_rts=True)
 
     tweets = getTweets(setOfTweets)
     # tweet_data = getTweetData(tweets)
@@ -192,8 +197,28 @@ def get_gen_tweets(handle):
     build_graph(tweets, {}, g)
 
     ret = []
-    for i in range(15):
-        ret.append(generate_title(g).strip())
+    seen = {}
+    while len(ret) < 15:
+        gen_tweet = generate_title(g).strip()
+        if not seen.get(gen_tweet, None):
+            ret.append(gen_tweet)
+            seen[gen_tweet] = True
+
+    # print(ret)
+    return ret
+
+
+def gen_speech(words):
+    g = nx.DiGraph(firsts=[], ends=[])
+    build_graph(words, {}, g)
+
+    ret = []
+    seen = {}
+    while len(ret) < 10:
+        gen_tweet = generate_title(g).strip()
+        if not seen.get(gen_tweet, None):
+            ret.append(gen_tweet)
+            seen[gen_tweet] = True
 
     # print(ret)
     return ret
