@@ -222,3 +222,96 @@ def gen_speech(words):
 
     # print(ret)
     return ret
+
+
+# get the top words for a frequency dictionary.
+# returns a list of the top give amount of words
+# in order to most to leasst frequent
+def getTop(freq, amount):
+    print(freq)
+    # words that we do not want in the top words list
+    skipWords = [
+        "to",
+        "a",
+        "and",
+        "is",
+        "for",
+        "be",
+        "being",
+        "was",
+        "that",
+        "have",
+        "he",
+        "his",
+        "in",
+        "the",
+        "of",
+        "she",
+        "on",
+        "had",
+        "it",
+        "when",
+        "not",
+        "at",
+        "this",
+        "t",
+        "s",
+        "i",
+        "as",
+        "you",
+        "but",
+        "so",
+        "with",
+        "him",
+        "would",
+        "should",
+        "could",
+        "http",
+        "www",
+        "https",
+        "org",
+        "com",
+        "we",
+    ]
+    topVals = []
+    maxVal = 0
+    word = ""
+    # run the amount of times asked for
+    for i in range(amount):
+        for key in freq:
+            if freq[key] > maxVal and key not in topVals and key not in skipWords:
+                maxVal = freq[key]
+                word = key
+        topVals.append(word)
+        maxVal = 0
+        word = ""
+    # print(topVals)
+    # reutrn top values
+    return topVals
+
+
+# get the frequency for words in a post
+# returns a dictionary of words as keys
+# and the value is the number of times
+# it shows up
+def getPostFreq(reddit, subreddit, numberOfPosts):
+    textData = {}
+    for submission in reddit.subreddit(subreddit).top(limit=numberOfPosts):
+        # text is one long string
+        text = submission.selftext
+        text = text.lower()
+        text = re.sub("[^\w]", " ", text).split()
+        posts = text
+        for i in posts:
+            if textData.get(i, -1) == -1:
+                textData.update({i: 0})
+            textData[i] += 1
+    return textData
+
+
+def top_reddit_words(subreddit):
+    reddit = praw.Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
+    numberOfPosts = 500
+    freq = getPostFreq(reddit, subreddit, numberOfPosts)
+    # print top 10 frequent words from posts
+    return getTop(freq, 10)

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .forms import RedditSearch
 from django.http import HttpResponse
-from lib.graphs import get_sentences
+from lib.graphs import get_sentences, top_reddit_words
 
 # Create your views here.
 
@@ -14,9 +14,12 @@ def search(request):
         # check whether it's valid:
         if form.is_valid():
             titles = get_sentences(form.cleaned_data["q"])
+            top_words = top_reddit_words(form.cleaned_data["q"])
             ctx = {}
             ctx["results"] = titles
             ctx["subreddit"] = form.cleaned_data["q"]
+            ctx["top_words"] = top_words
+
             return render(request, "reddit/results.html", context=ctx)
 
     # if a GET (or any other method) we'll create a blank form

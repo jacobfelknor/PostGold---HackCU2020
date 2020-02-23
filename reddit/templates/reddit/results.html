@@ -10,6 +10,13 @@
             {{ result }}
             <hr>
             {% endfor %}
+            <h3>Top words for titles of r/{{ subreddit }}:</h3>
+            <ul>
+                {% for word in top_words %}
+                <li>{{ word }}</li>
+                {% endfor %}
+            </ul>
+            <hr>
             <button class="btn btn-success" onclick="location.reload();">Reload</button>
         </div>
     </div>
